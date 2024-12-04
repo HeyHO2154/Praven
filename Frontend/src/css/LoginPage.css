@@ -1,0 +1,193 @@
+@font-face {
+    font-family: 'SBAggroM';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroM.woff') format('woff');
+    font-weight: 300;
+    /* font-style: normal; */
+  }
+
+  @font-face {
+    font-family: 'SBAggroB';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 공통 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    /* font-family: SBAggroB; */
+    /* background-color: #f4f4f9; */
+    color: #333;
+  }
+  
+  /* .header {
+    background-color: #6200ea;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+  } */
+  
+  /* 전체 로그인 폼 */
+  .login-form {
+    flex: 0 0 35%; /* 로그인 폼은 화면의 75% 차지 */
+    background-color: #ffffff;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); */
+    font-family: SBAggroM;
+    font-size: 1em;
+    color: #aab2bd;
+
+  z-index: 4;
+  }
+
+  /* .login-form .login{
+    margin: 1em;
+  } */
+
+  /* 로그인 폼 전체 텍스트 */
+  .login-form .login-text{
+    /* font-family: SBAggroM; */
+    font-size: 0.5em;
+    /* margin-bottom: 1em; */
+    /* text-align: left; */
+  }
+  
+  /* 로그인 */
+  .login-form h2 {   
+      font-family: SBAggroM;
+      margin-bottom: 1.5rem;
+      color: #1B1B1B;
+      font-size: 23px;
+  }
+
+  /* 박스 안 아이디 비밀번호 */
+  .login-form #userID{
+    font-family: SBAggroM;
+    color: #1B1B1B;
+  }
+  .login-form #password{
+    font-family: SBAggroM;
+    color: #1B1B1B;
+  }
+
+
+
+
+    
+    .login-form form {
+        width: 100%;
+        max-width: 300px;
+        
+    }
+    
+    .login-form label {
+        display: block;
+        margin: 3px;
+    }
+    
+    .login-form input {
+        width: 100%;
+        height: 40px;
+        padding: 0.8rem;
+        margin-bottom: 0.8em;
+        border: 1px solid #4B89DC;
+        border-radius: 15px;
+        
+    }
+    
+    /* 회원가입 있는 p태그 */
+    .login-form p {
+        /* display: flex;
+        justify-content: space-between;
+        align-items: center;  세로 정렬 */
+        font-size: 10px;
+        text-align: right;
+    }
+
+      /* 회원가입 글씨 */
+     .login-form .register{
+        color: #4B89DC;
+        cursor: pointer;
+    }
+
+    /* 로그인 버튼 */
+    .login-form button {
+        width: 100%;
+        padding: 0.8rem;
+        background-color: #4B89DC;
+        color: #fff;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-family: SBAggroM;
+        font-size: 13px;
+    }
+    
+    .login-form button:hover {
+        background-color: #3d78c5;
+
+    }
+    
+   
+    
+
+
+    /* 일러스트 자리 */
+    .login-container {
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+    }
+    
+    .login-illust {
+      flex: 0 0 65%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative; /* 자식 요소들의 위치를 이 요소를 기준으로 잡기 위해 설정 */
+      width: 100%;  /* 부모 요소의 너비 설정 */
+      height: 100vh;  /* 화면 전체 높이로 설정 */
+    }
+    
+    .island {
+      background-image: url("../assets/island.png");
+      background-size: contain;  /* 비율 유지하면서 크기 꽉 채움 */
+      background-repeat: no-repeat;
+      background-position: center;  /* 중앙 정렬 */
+    
+      position: absolute;
+      top: -60px;
+      /* bottom: 10px; */
+      left: -150px;
+      width: 180%;  /* 고정 크기 설정 */
+      height: 120%;  /* 고정 크기 설정 */
+      z-index: 2;
+    }
+    
+    .login-illusttttt {
+      background-image: url("../assets/mul.png");
+      background-size: cover;  /* 이미지 크기 조정 */
+      background-repeat: no-repeat;
+    
+      position: absolute; /* 부모 요소를 기준으로 위치 */
+      top: 0;
+      left: 0;
+      width: 103%;  /* 이미지를 부모보다 크게 설정 (필요에 따라 조정) */
+      height: 100%;
+      z-index: 1;  /* 아래에 표시되도록 설정 */
+      pointer-events: none;  /* 이 요소는 클릭을 받지 않게 설정 */
+    }
+    
+
+    
+
