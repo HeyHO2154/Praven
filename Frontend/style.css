@@ -300,6 +300,8 @@ body{
 	background:#fff;
 	z-index:999;
 	width:100%;
+	padding-top: 10px; /* 추가 */
+	padding-bottom: 20px; /* 추가 */
 }
 .get-quote{
 	margin-top:12px;
