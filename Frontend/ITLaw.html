@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>AI Assistant</h1>
+    <form id="queryForm">
+        <label for="prompt">Enter your question:</label><br>
+        <textarea id="prompt" name="prompt" rows="4" cols="50"></textarea><br><br>
+        <button type="submit">Submit</button>
+    </form>
+    <h2>Response:</h2>
+    <div id="response"></div>
+
+    <script>
+        $("#queryForm").on("submit", function(event) {
+            event.preventDefault();
+
+            const prompt = $("#prompt").val();
+
+            // Retrieve 단계
+            fetch("http://ekaf.kro.kr:6000/retrieve", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ query: prompt })
+            })
+            .then(response => response.json())
+            .then(retrieveData => {
+                // Retrieve 텍스트 결합
+                const temp_rt = retrieveData.map(item => item.text).join(" ");
+
+                // Translate Retrieve 단계
+                fetch("http://ekaf.kro.kr:5000/translate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        q: temp_rt,
+                        source: "auto",
+                        target: "en",
+                        format: "text"
+                    })
+                })
+                .then(response => response.json())
+                .then(translatedRetrieveData => {
+                    const translatedText = translatedRetrieveData.translatedText;
+
+                    // LLM 단계
+                    const messages = [
+                        {
+                            role: "system",
+                            content: `You are a helpful assistant. The question is: ${prompt}`
+                        },
+                        {
+                            role: "user",
+                            content: `Provided document: ${translatedText}`
+                        }
+                    ];
+
+                    fetch("http://ekaf.kro.kr:11434/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            model: "llama3.2:1b",
+                            messages: messages,
+                            stream: false
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(llmResponse => {
+                        const assistantResponse = llmResponse.choices[0].delta.content;
+
+                        // 화면에 결과 출력
+                        $("#response").html(`
+                            <strong>Question:</strong> ${prompt}<br>
+                            <strong>Response:</strong> ${assistantResponse}<br>
+                            <strong>Translated Retrieve:</strong> ${translatedText}
+                        `);
+                    });
+                });
+            })
+            .catch(error => {
+                $("#response").html(`<strong>Error:</strong> ${error.message}`);
+            });
+        });
+    </script>
+</body>
+</html>
