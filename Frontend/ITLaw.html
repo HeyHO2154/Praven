@@ -5,90 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #response { display: none; } /* 초기 상태에서는 숨김 */
+    </style>
 </head>
 <body>
-    <h1>AI Assistant</h1>
+    <h1>법률 AI 서비스</h1>
     <form id="queryForm">
-        <label for="prompt">Enter your question:</label><br>
+        <label for="prompt">상담 내용을 적어주세요:</label><br>
         <textarea id="prompt" name="prompt" rows="4" cols="50"></textarea><br><br>
-        <button type="submit">Submit</button>
+        <button type="submit">상담요청</button>
     </form>
-    <h2>Response:</h2>
-    <div id="response"></div>
+    <div id="response">
+        <h2>응답:</h2>
+        <strong>관련 법령:</strong><br>
+        <div id="relatedLaws"></div><br>
+        <strong>변호사 AI 조언:</strong><br>
+        <div id="aiAdvice"></div>
+    </div>
 
     <script>
         $("#queryForm").on("submit", function(event) {
             event.preventDefault();
 
             const prompt = $("#prompt").val();
+            let originalLanguage = ""; // 입력 언어를 저장할 변수
 
-            // Retrieve 단계
-            fetch("http://ekaf.kro.kr:6000/retrieve", {
+            // 응답 박스를 보여줌
+            $("#response").show();
+            $("#relatedLaws").html(""); // 초기화
+            $("#aiAdvice").html(""); // 초기화
+
+            // 1. Prompt를 영어로 번역
+            fetch("http://ekaf.kro.kr:25901/translate", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ query: prompt })
+                body: JSON.stringify({
+                    q: prompt,
+                    source: "auto",
+                    target: "en",
+                    format: "text"
+                })
             })
             .then(response => response.json())
-            .then(retrieveData => {
-                // Retrieve 텍스트 결합
-                const temp_rt = retrieveData.map(item => item.text).join(" ");
+            .then(promptTranslation => {
+                const translatedPrompt = promptTranslation.translatedText;
 
-                // Translate Retrieve 단계
-                fetch("http://ekaf.kro.kr:5000/translate", {
+                // 감지된 언어를 JSON 응답에서 가져오기
+                originalLanguage = promptTranslation.detectedLanguage?.language || "en"; // 기본값: "en"
+
+                // 디버깅 정보 출력
+                console.log("Translation API Response:", promptTranslation);
+                console.log("Original Language Detected:", originalLanguage);
+                console.log("Translated Prompt:", translatedPrompt);
+
+                // 2. Retrieve 단계
+                fetch("http://ekaf.kro.kr:25901/retrieve", {  // 프록시 서버로 요청
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({
-                        q: temp_rt,
-                        source: "auto",
-                        target: "en",
-                        format: "text"
-                    })
+                    body: JSON.stringify({ query: prompt })
                 })
                 .then(response => response.json())
-                .then(translatedRetrieveData => {
-                    const translatedText = translatedRetrieveData.translatedText;
+                .then(retrieveData => {
+                    const temp_rt = retrieveData.map(item => item.text).join(" ");
 
-                    // LLM 단계
-                    const messages = [
-                        {
-                            role: "system",
-                            content: `You are a helpful assistant. The question is: ${prompt}`
-                        },
-                        {
-                            role: "user",
-                            content: `Provided document: ${translatedText}`
-                        }
-                    ];
+                    // 관련 법령 즉시 출력
+                    $("#relatedLaws").html(temp_rt);
 
-                    fetch("http://ekaf.kro.kr:11434/v1/chat/completions", {
+                    // 디버깅 정보 출력
+                    console.log("Retrieve Data:", retrieveData);
+                    console.log("Temp Retrieve Text:", temp_rt);
+
+                    // 3. Translate Retrieve 단계
+                    fetch("http://ekaf.kro.kr:25901/translate", {  // 프록시 서버로 요청
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            model: "llama3.2:1b",
-                            messages: messages,
-                            stream: false
+                            q: temp_rt,
+                            source: "auto",
+                            target: "en",
+                            format: "text"
                         })
                     })
                     .then(response => response.json())
-                    .then(llmResponse => {
-                        const assistantResponse = llmResponse.choices[0].delta.content;
+                    .then(translatedRetrieveData => {
+                        const translatedText = translatedRetrieveData.translatedText;
 
-                        // 화면에 결과 출력
-                        $("#response").html(`
-                            <strong>Question:</strong> ${prompt}<br>
-                            <strong>Response:</strong> ${assistantResponse}<br>
-                            <strong>Translated Retrieve:</strong> ${translatedText}
-                        `);
+                        // 디버깅 정보 출력
+                        console.log("Translated Retrieve Text:", translatedText);
+
+                        // 4. LLM 단계
+                        const messages = [
+                            {
+                                role: "system",
+                                content: `You are a Police Officer. Answer the question with provided documents. The question is: ${translatedPrompt}`
+                            },
+                            {
+                                role: "user",
+                                content: `Provided document: ${translatedText}`
+                            }
+                        ];
+
+                        fetch("http://ekaf.kro.kr:25901/chat", {  // 프록시 서버로 요청
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                model: "llama3.2:1b",
+                                messages: messages,
+                                stream: false
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(llmResponse => {
+                            const assistantResponse = llmResponse.choices[0].message.content;
+
+                            // 디버깅 정보 출력
+                            console.log("LLM Response:", llmResponse);
+                            console.log("Assistant Response:", assistantResponse);
+
+                            // 5. 번역 결과를 처음 입력한 언어로 다시 번역
+                            fetch("http://ekaf.kro.kr:25901/translate", {  // 프록시 서버로 요청
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    q: assistantResponse,
+                                    source: "en",  // 영어에서
+                                    target: originalLanguage,  // 처음 입력 언어로 번역
+                                    format: "text"
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(finalTranslation => {
+                                const finalText = finalTranslation.translatedText;
+
+                                // 디버깅 정보 출력
+                                console.log("Final Translated Text:", finalText);
+
+                                // 변호사 AI 조언 출력
+                                $("#aiAdvice").html(finalText);
+                            });
+                        });
                     });
                 });
             })
             .catch(error => {
+                console.error("Error:", error.message);
                 $("#response").html(`<strong>Error:</strong> ${error.message}`);
             });
         });
