@@ -4,59 +4,53 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.metrics.pairwise import cosine_similarity
+from joblib import load
 
 def load_json(file_path):
-    """JSON 파일 로드"""
+    """Loads a JSON file"""
     with open(file_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-def vectorize_lda_single(input_text, documents, n_topics=2):
-    """단일 문장을 LDA 방식으로 벡터화"""
-    count_vectorizer = CountVectorizer()
-    count_matrix = count_vectorizer.fit_transform(documents + [input_text])
-    
-    lda = LatentDirichletAllocation(n_components=n_topics, random_state=42)
-    lda_matrix = lda.fit_transform(count_matrix)
-    
-    return lda_matrix[-1]  # 입력 문장의 벡터 반환
+def load_vectorizer(file_path):
+    """Loads CountVectorizer's vocabulary"""
+    with open(file_path, 'r', encoding='utf-8') as f:
+        vocab = json.load(f)
+    return CountVectorizer(vocabulary=vocab)
+
+def load_lda_model(file_path):
+    """Loads a saved LDA model"""
+    return load(file_path)
 
 def find_top_similar_vectors(input_vector, vectors, top_n=5):
-    """입력 벡터와 저장된 벡터 간의 유사도를 계산하여 상위 N개 반환"""
+    """Finds top N similar vectors to the input vector"""
     similarities = cosine_similarity([input_vector], vectors)[0]
     top_indices = np.argsort(similarities)[::-1][:top_n]
-    
     return [(index, similarities[index]) for index in top_indices]
 
-def main(input_text, json_path, n_topics=50, top_n=5):
-    """
-    사용자 입력 문장을 벡터화하여 JSON 파일의 벡터와 비교한 상위 N개의 유사도를 출력.
-    
-    input_text: 사용자 입력 문장
-    json_path: 벡터와 문장이 저장된 JSON 파일 경로
-    """
-    # JSON 로드
+def main(input_text, json_path, vectorizer_path, lda_model_path, top_n=5):
+    """Compares the input text with JSON's vectors and outputs top N similar"""
+    # Load JSON data, vectorizer, and LDA model
     data = load_json(json_path)
     documents = data["documents"]
     stored_vectors = np.array(data["vectors"])
+    count_vectorizer = load_vectorizer(vectorizer_path)
+    lda_model = load_lda_model(lda_model_path)
     
-    # 입력 문장을 벡터화
-    input_vector = vectorize_lda_single(input_text, documents, n_topics=n_topics)
+    # Transform the input text
+    input_vector = lda_model.transform(count_vectorizer.transform([input_text]))[0]
     
-    # 상위 N개의 유사도 계산
+    # Find top similar vectors
     top_similar = find_top_similar_vectors(input_vector, stored_vectors, top_n=top_n)
     
-    # 결과 출력
-    print()
+    # Output results
+    print("\nTop similar sentences:")
     for rank, (index, similarity) in enumerate(top_similar, 1):
-        print(f"{rank}. 유사도: {similarity:.4f}, 문장: {documents[index]}")
+        print(f"{rank}. Similarity: {similarity:.4f}, Sentence: {documents[index]}")
 
-# 실행 예시
+# Example execution
 if __name__ == "__main__":
-    # 사용자 입력
-    input_sentence = input("문장을 입력하세요: ")
-    
-    # JSON 파일 경로
+    input_sentence = input("Enter a sentence: ")
     json_file_path = os.path.join(os.path.dirname(__file__), "output.json")
-    
-    # LDA 방식으로 유사도 계산 및 출력
-    main(input_sentence, json_file_path, n_topics=50, top_n=5)
+    vectorizer_file = os.path.join(os.path.dirname(__file__), "vectorizer_vocab.json")
+    lda_model_file = os.path.join(os.path.dirname(__file__), "lda_model.joblib")
+    main(input_sentence, json_file_path, vectorizer_file, lda_model_file, top_n=5)
