@@ -1,4 +1,5 @@
 import json
+import os
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
@@ -26,7 +27,7 @@ def find_top_similar_vectors(input_vector, vectors, top_n=5):
     
     return [(index, similarities[index]) for index in top_indices]
 
-def main(input_text, json_path, n_topics=2, top_n=5):
+def main(input_text, json_path, n_topics=50, top_n=5):
     """
     사용자 입력 문장을 벡터화하여 JSON 파일의 벡터와 비교한 상위 N개의 유사도를 출력.
     
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     input_sentence = input("문장을 입력하세요: ")
     
     # JSON 파일 경로
-    json_file_path = r"C:\Users\SSAFY\Desktop\output.json"
+    json_file_path = os.path.join(os.path.dirname(__file__), "output.json")
     
     # LDA 방식으로 유사도 계산 및 출력
-    main(input_sentence, json_file_path, n_topics=100, top_n=5)
+    main(input_sentence, json_file_path, n_topics=50, top_n=5)

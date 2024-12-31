@@ -1,4 +1,5 @@
 import json
+import os
 from docx import Document
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
@@ -21,7 +22,7 @@ def vectorize_lda(documents, n_topics=2):
     lda_matrix = lda.fit_transform(count_matrix)
     return lda_matrix.tolist()
 
-def main(file_path, output_path, method="lda", n_topics=10):
+def main(file_path, output_path, method="lda", n_topics=50):
     """
     .docx 파일을 읽고 지정된 방식으로 벡터화한 결과를 JSON으로 저장.
     
@@ -44,6 +45,6 @@ def main(file_path, output_path, method="lda", n_topics=10):
 
 # 실행 예시
 if __name__ == "__main__":
-    input_file = r"C:\Users\SSAFY\Desktop\data.docx"  # .docx 파일 경로
-    output_file = r"C:\Users\SSAFY\Desktop\output.json"  # 저장할 JSON 파일 경로
-    main(input_file, output_file, method="lda", n_topics=100)  # LDA 방식
+    input_file = os.path.join(os.path.dirname(__file__), "data.docx")
+    output_file = os.path.join(os.path.dirname(__file__), "output.json")
+    main(input_file, output_file, method="lda", n_topics=50)  # LDA 방식
