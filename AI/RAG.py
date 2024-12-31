@@ -1,140 +1,62 @@
-import requests
+from flask import Flask, request, jsonify
+from flask_cors import CORS  # CORS 추가
 import json
+import numpy as np
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
-# Flask 서버 URL 및 LLM URL
-retrieve_url = "http://ekaf.kro.kr:6000/retrieve"
-llm_url = "http://ekaf.kro.kr:11434/v1/chat/completions"
-translate_url = "http://ekaf.kro.kr:5000/translate"
+# Flask 앱 생성
+app = Flask(__name__)
+CORS(app)  # CORS 설정 추가
 
-def translate_text(text, source_lang, target_lang):
-    payload = {
-        "q": text,
-        "source": source_lang,
-        "target": target_lang,
-        "format": "text"
-    }
-    headers = {"Content-Type": "application/json"}
+# 모델 로드
+model_name = "sentence-transformers/all-MiniLM-L6-v2"
+model = SentenceTransformer(model_name)
 
-    try:
-        response = requests.post(translate_url, json=payload, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("translatedText", "Translation Error")
-        else:
-            print(f"Translation error: {response.status_code}")
-            return "Translation Error"
-    except requests.exceptions.RequestException as e:
-        print(f"Translation request failed: {e}")
-        return "Translation Error"
+# JSON 파일 경로
+json_file_path = r"/home/junma97/Desktop/law_embeddings.json"
 
-def detect_language(text):
-    payload = {
-        "q": text,
-        "source": "auto",
-        "target": "en",
-        "format": "text"
-    }
-    headers = {"Content-Type": "application/json"}
+# JSON 데이터 로드
+def load_data(json_file_path):
+    with open(json_file_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    return data
 
-    try:
-        response = requests.post(translate_url, json=payload, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("detectedLanguage", {}).get("language", "en")
-        else:
-            print(f"Language detection error: {response.status_code}")
-            return "en"
-    except requests.exceptions.RequestException as e:
-        print(f"Language detection request failed: {e}")
-        return "en"
+# 코사인 유사도 기반 검색 함수
+def retrieve_top_k(query, data, model, top_k=5):
+    query_vector = model.encode(query, convert_to_tensor=True).cpu().numpy()
+    
+    results = []
+    for item in data:
+        text = item["text"]
+        vector = np.array(item["vector"])
+        similarity = cosine_similarity([query_vector], [vector])[0][0]
+        results.append((text, similarity))
 
-def send_message_with_streaming():
-    while True:
-        # 사용자 입력
-        prompt = input("Enter your message (or type 'exit' to quit): ")
-        if prompt.lower() == "exit":
-            print("Exiting... Goodbye!")
-            break
+    # 유사도 기준으로 정렬
+    results = sorted(results, key=lambda x: x[1], reverse=True)
+    return results[:top_k]
 
-        # 입력 언어 감지
-        source_lang = detect_language(prompt)
-        print("사용자 언어: "+source_lang)
+# 데이터 로드
+data = load_data(json_file_path)
 
-        # Retrieve 단계
-        retrieve_payload = {"query": prompt}
-        retrieve_headers = {"Content-Type": "application/json"}
+# HTTP POST 요청 처리
+@app.route("/retrieve", methods=["POST"])
+def retrieve():
+    # 요청 데이터에서 쿼리 가져오기
+    input_data = request.json
+    query = input_data.get("query", "")
+    
+    if not query:
+        return jsonify({"error": "No query provided"}), 400
 
-        try:
-            retrieve_response = requests.post(retrieve_url, json=retrieve_payload, headers=retrieve_headers)
+    # 유사한 문장 검색
+    top_k_results = retrieve_top_k(query, data, model, top_k=5)
 
-            if retrieve_response.status_code == 200:
-                print("Retrieve 성공!")
-                retrieve_data = retrieve_response.json()
+    # 결과 반환
+    response = [{"text": text, "similarity": similarity} for text, similarity in top_k_results]
+    return jsonify(response)
 
-                # text 필드만 추출하여 하나의 문자열로 합치기
-                print("질문 텍스트:", prompt)
-                # 질문 번역 (원래 언어에서 영어로)
-                temp_qu = translate_text(prompt, source_lang, "en")
-                print("번역된 Retrieve 데이터:", temp_qu)
-
-                # text 필드만 추출하여 하나의 문자열로 합치기
-                temp_rt = " ".join(item["text"] for item in retrieve_data)
-                print("결합된 Retrieve 텍스트:", temp_rt)
-                # Retrieve 결과 번역 (원래 언어에서 영어로)
-                translated_retrieve_data = translate_text(temp_rt, source_lang, "en")
-                print("번역된 Retrieve 데이터:", translated_retrieve_data)
-
-                # LLM 단계
-                messages = [
-                    {
-                        "role": "system",
-                        "content": "You are an Police officer, and your task is to accurately understand the provided document and respond accordingly. Only answer based on the given content. Question is "+temp_qu,
-                    },
-                    {"role": "user", "content": "provided document: "+translated_retrieve_data},
-                ]
-                print("LLM에 전송될 메시지:", messages)
-
-                llm_payload = {
-                    "model": "llama3.2:1b",
-                    "messages": messages,
-                    "stream": True
-                }
-                llm_headers = {"Content-Type": "application/json; charset=utf-8"}
-
-                with requests.post(llm_url, headers=llm_headers, data=json.dumps(llm_payload), stream=True) as llm_response:
-                    if llm_response.status_code == 200:
-                        print("LLM Response stream started:")
-                        assistant_response = ""
-
-                        for line in llm_response.iter_lines(decode_unicode=True):
-                            if line:
-                                line = line.strip()
-                                if line.startswith("data:"):
-                                    json_string = line[5:].strip()
-
-                                    if json_string == "[DONE]":
-                                        print("\n[Complete]\n")
-                                        break
-
-                                    try:
-                                        decoded_line = json.loads(json_string)
-                                        content = decoded_line.get("choices", [{}])[0].get("delta", {}).get("content", "")
-                                        assistant_response += content
-                                        print(content, end="", flush=True)
-                                    except json.JSONDecodeError:
-                                        print("\n[Error decoding JSON]\n")
-
-                        # LLM 결과 번역 (영어에서 원래 언어로)
-                        translated_response = translate_text(assistant_response, "en", source_lang)
-                        print("\n번역된 LLM 응답:", translated_response)
-                    else:
-                        print(f"[Error] HTTP {llm_response.status_code}: {llm_response.text}")
-            else:
-                print(f"Retrieve 오류 발생! 상태 코드: {retrieve_response.status_code}")
-                print("Retrieve 응답 내용:", retrieve_response.text)
-
-        except requests.exceptions.RequestException as e:
-            print(f"요청 중 오류 발생: {e}")
-
+# 서버 실행
 if __name__ == "__main__":
-    send_message_with_streaming()
+    app.run(host="0.0.0.0", port=8000)
