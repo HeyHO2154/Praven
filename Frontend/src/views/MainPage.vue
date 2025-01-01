@@ -1,26 +1,34 @@
 <template>
-  <div class="slider-container">
+  <div>
     <!-- 슬라이더 영역 -->
-    <div class="slider" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-      <img v-for="(image, index) in images" :key="index" :src="image" alt="슬라이드 이미지" />
+    <div class="slider-container">
+      <div class="slider" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
+        <img v-for="(image, index) in images" :key="index" :src="image" alt="슬라이드 이미지" />
+      </div>
+
+      <!-- 좌우 화살표 버튼 -->
+      <button class="arrow left-arrow" @click="prevSlide">❮</button>
+      <button class="arrow right-arrow" @click="nextSlide">❯</button>
     </div>
 
-    <!-- 좌우 화살표 버튼 -->
-    <button class="arrow left-arrow" @click="prevSlide">❮</button>
-    <button class="arrow right-arrow" @click="nextSlide">❯</button>
-  </div>
 
-  <!-- About 컴포넌트 추가 -->
-  <About />
+    <!-- About 컴포넌트 -->
+    <About />
+    <div class="divider"></div>
+    <!-- PowerClicker 컴포넌트 -->
+    <PowerClicker />
+  </div>
 </template>
 
 <script>
 import About from "@/views/About/About.vue";
+import PowerClicker from "./Service/PowerClicker.vue";
 
 export default {
   name: "MainPage",
   components: {
-    About, // 등록
+    About,
+    PowerClicker,
   },
   data() {
     return {
@@ -105,5 +113,14 @@ export default {
 /* 화살표 버튼 hover 효과 */
 .arrow:hover {
   background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* 구분선 스타일 */
+.divider {
+  width: 80%;
+  height: 2px;
+  background-color: #ddd;
+  margin: 50px auto;
+  border-radius: 1px;
 }
 </style>

@@ -1,7 +1,6 @@
 <template>
     <section class="info-section">
       <h2>프라벤은 색다른 재미를 추구합니다</h2>
-      <br>
       <p>고객과의 소통을 통해 사용자 맞춤형 게임을 제작하여, 인디 게임의 강점을 극대화합니다.</p>
       <div class="info-cards">
         <div class="info-card">
@@ -34,6 +33,8 @@
     text-align: center;
     padding: 50px 20px;
     background-color: white;
+    margin-top: 60px;
+    margin-bottom: 80px;
   }
   .info-section h2 {
     font-size: 2rem;

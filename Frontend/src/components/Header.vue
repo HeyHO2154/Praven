@@ -1,46 +1,46 @@
 <template>
   <header class="header">
     <div class="header-container">
-      <img src="../assets/logo.png" alt="Praven Logo" class="logo" @click="navigateToMainPage" style="cursor: pointer;"/>
+      <img src="../assets/logo.png" alt="Praven Logo" class="logo" @click="navigateToPage('/')" style="cursor: pointer;"/>
       <nav class="nav-menu">
         <ul class="menu-list">
           <li class="dropdown" @mouseenter="showDropdown('news')" @mouseleave="hideDropdown('news')">
             <a :class="{ active: isDropdownVisible.news }" href="#">프라벤 소식지<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.news }">
-              <li><a href="#">공지사항</a></li>
-              <li><a href="#">활동사진</a></li>
+              <li><a href="#" @click="navigateToPage('/nullpage')">공지사항</a></li>
+              <li><a href="#" @click="navigateToPage('/nullpage')">활동사진</a></li>
             </ul>
           </li>
           <li>
-            <a href="#">회사소개</a>
+            <a href="#" @click.prevent="navigateToPage('/about')">회사소개</a>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('service')" @mouseleave="hideDropdown('service')">
             <a :class="{ active: isDropdownVisible.service }" href="#">서비스<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.service }">
-              <li><a href="#">파워 클릭커</a></li>
-              <li><a href="#">잇(IT)법</a></li>
+              <li><a href="#" @click="navigateToPage('/powerclicker')">파워 클릭커</a></li>
+              <li><a href="#" @click="navigateToPage('/nullpage')">잇(IT)법</a></li>
             </ul>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('contact')" @mouseleave="hideDropdown('contact')">
             <a :class="{ active: isDropdownVisible.contact }" href="#">소통 창구<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.contact }">
-              <li><a href="#">문의사항</a></li>
-              <li><a href="#">자유게시판</a></li>
+              <li><a href="#" @click="navigateToPage('/nullpage')">문의사항</a></li>
+              <li><a href="#" @click="navigateToPage('/nullpage')">자유게시판</a></li>
             </ul>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('recruit')" @mouseleave="hideDropdown('recruit')">
             <a :class="{ active: isDropdownVisible.recruit }" href="#">입사지원<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.recruit }">
-              <li><a href="#">채용공고</a></li>
-              <li><a href="#">합격자 발표</a></li>
+              <li><a href="#" @click="navigateToPage('/nullpage')">채용공고</a></li>
+              <li><a href="#" @click="navigateToPage('/nullpage')">합격자 발표</a></li>
             </ul>
           </li>
           <li>
-            <a href="#">ESG</a>
+            <a href="#" @click="navigateToPage('/nullpage')">ESG</a>
           </li>
         </ul>
       </nav>
-      <div class="login-button">
+      <div class="login-button" @click="navigateToPage('/nullpage')">
         <button>로그인</button>
       </div>
     </div>
@@ -67,11 +67,10 @@ export default {
     hideDropdown(menu) {
       this.isDropdownVisible[menu] = false;
     },
-    navigateToMainPage() {
-      // 라우터 이동 후 스크롤 초기화
-      this.$router.push("/").then(() => {
-        window.scrollTo(0, 0); // 스크롤 위치 초기화
-        window.location.reload(); // 페이지 새로고침
+    navigateToPage(path) {
+      this.$router.push(path).then(() => {
+        window.scrollTo(0, 0);
+        window.location.reload;
       });
     },
   },
