@@ -5,7 +5,7 @@
       <nav class="nav-menu">
         <ul class="menu-list">
           <li class="dropdown" @mouseenter="showDropdown('news')" @mouseleave="hideDropdown('news')">
-            <a :class="{ active: isDropdownVisible.news }" href="#">프라벤 소식지 ▼</a>
+            <a :class="{ active: isDropdownVisible.news }" href="#">프라벤 소식지</a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.news }">
               <li><a href="#">공지사항</a></li>
               <li><a href="#">활동사진</a></li>
@@ -15,21 +15,21 @@
             <a href="#">회사소개</a>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('service')" @mouseleave="hideDropdown('service')">
-            <a :class="{ active: isDropdownVisible.service }" href="#">서비스 ▼</a>
+            <a :class="{ active: isDropdownVisible.service }" href="#">서비스</a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.service }">
               <li><a href="#">파워 클릭커</a></li>
               <li><a href="#">잇(IT)법</a></li>
             </ul>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('contact')" @mouseleave="hideDropdown('contact')">
-            <a :class="{ active: isDropdownVisible.contact }" href="#">소통 창구 ▼</a>
+            <a :class="{ active: isDropdownVisible.contact }" href="#">소통 창구</a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.contact }">
               <li><a href="#">문의사항</a></li>
               <li><a href="#">자유게시판</a></li>
             </ul>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('recruit')" @mouseleave="hideDropdown('recruit')">
-            <a :class="{ active: isDropdownVisible.recruit }" href="#">입사지원 ▼</a>
+            <a :class="{ active: isDropdownVisible.recruit }" href="#">입사지원</a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.recruit }">
               <li><a href="#">채용공고</a></li>
               <li><a href="#">합격자 발표</a></li>
@@ -115,6 +115,7 @@ export default {
 }
 
 .menu-list a {
+  position: relative; /* ::after를 사용할 수 있도록 position 설정 */
   text-decoration: none;
   font-size: 16px;
   color: black;
@@ -127,6 +128,20 @@ export default {
   color: #f57c00;
 }
 
+/* A글자에서만 주황 막대기 생성 */
+.menu-list a:not(.dropdown-menu a):hover::after,
+.menu-list a:not(.dropdown-menu a).active::after {
+  content: ''; /* 가상 요소 활성화 */
+  position: absolute;
+  left: -12%; /* 글자 아래 막대기의 시작 지점 */
+  bottom: 0px; /* 글자 아래쪽에 위치 */
+  width: 130%; /* 글자 너비만큼 */
+  height: 2px; /* 막대기 높이 */
+  background-color: #f57c00; /* 주황색 */
+  border-radius: 2px; /* 직사각형에 약간의 곡률 */
+}
+
+
 /* 부모 li 요소를 기준으로 드롭다운 메뉴 위치 지정 */
 .menu-list li {
   position: relative; /* 부모 li를 기준으로 드롭다운 메뉴 위치 */
@@ -136,7 +151,7 @@ export default {
 .dropdown-menu {
   position: absolute;
   top: 150%; /* A 글자 바로 아래에 배치 */
-  left: 0; /* 부모 li의 왼쪽 기준 */
+  left: -12%; /* 부모 li의 왼쪽 기준 */
   background-color: white;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   list-style: none;
@@ -187,10 +202,10 @@ export default {
 .dropdown-menu li a.active::before {
   content: ''; /* 가상 요소 활성화 */
   position: absolute;
-  left: -20px; /* 왼쪽으로 이동하여 드롭다운 메뉴에 밀착 */
-  top: -10px;
+  left: -21px; /* 왼쪽으로 이동하여 드롭다운 메뉴에 밀착 */
+  top: -11px;
   width: 4px; /* 직사각형 너비 */
-  height: 150%; /* 글자의 높이에 맞춤 */
+  height: 154%; /* 글자의 높이에 맞춤 */
   background-color: #f57c00; /* 주황색 */
   border-radius: 0px; /* 직사각형에 약간의 곡률 */
 }
