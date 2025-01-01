@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: http://praven.kro.kr/sitemap.xml
