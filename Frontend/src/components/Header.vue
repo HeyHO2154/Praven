@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header-container">
-      <img src="../assets/logo.png" alt="Praven Logo" class="logo" />
+      <img src="../assets/logo.png" alt="Praven Logo" class="logo" @click="navigateToMainPage" style="cursor: pointer;"/>
       <nav class="nav-menu">
         <ul class="menu-list">
           <li class="dropdown" @mouseenter="showDropdown('news')" @mouseleave="hideDropdown('news')">
@@ -67,6 +67,13 @@ export default {
     hideDropdown(menu) {
       this.isDropdownVisible[menu] = false;
     },
+    navigateToMainPage() {
+      // 라우터 이동 후 스크롤 초기화
+      this.$router.push("/").then(() => {
+        window.scrollTo(0, 0); // 스크롤 위치 초기화
+        window.location.reload(); // 페이지 새로고침
+      });
+    },
   },
 };
 </script>
@@ -74,7 +81,7 @@ export default {
 <style scoped>
 /* Header 전체 스타일 */
 .header {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;
