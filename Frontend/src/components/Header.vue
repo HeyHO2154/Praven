@@ -7,7 +7,7 @@
           <li class="dropdown" @mouseenter="showDropdown('news')" @mouseleave="hideDropdown('news')">
             <a :class="{ active: isDropdownVisible.news }" href="#">프라벤 소식지<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.news }">
-              <li><a href="#" @click="navigateToPage('/nullpage')">공지사항</a></li>
+              <li><a href="#" @click="navigateToPage('/board')">공지사항</a></li>
               <li><a href="#" @click="navigateToPage('/nullpage')">활동사진</a></li>
             </ul>
           </li>

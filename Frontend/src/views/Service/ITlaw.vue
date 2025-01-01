@@ -13,7 +13,8 @@
         <ul v-if="relatedLaws.length > 0">
           <li v-for="(law, index) in relatedLaws" :key="index">{{ law }}</li>
         </ul>
-        <p v-if="aiAdvice"><strong>변호사 AI 조언:</strong></p>
+        <p v-if="isLoading"><strong>변호사 AI 조언:</strong> {{ loadingText }}</p>
+        <p v-else-if="aiAdvice"><strong>변호사 AI 조언:</strong></p>
         <p>{{ aiAdvice }}</p>
       </div>
       
@@ -39,6 +40,9 @@ export default {
       relatedLaws: [], // 관련 법 조항
       aiAdvice: "", // 변호사 AI의 최종 조언
       originalLanguage: "ko", // 기본 언어
+      isLoading: false, // 로딩 상태 플래그
+      loadingText: "응답 생성중.", // 로딩 중 텍스트
+      loadingInterval: null, // 로딩 애니메이션 interval
     };
   },
   methods: {
@@ -49,6 +53,12 @@ export default {
       }
 
       try {
+        // 초기화
+        this.relatedLaws = [];
+        this.aiAdvice = "";
+        this.isLoading = true;
+        this.startLoadingAnimation(); // 로딩 애니메이션 시작
+
         // 1. Retrieve 단계 (관련 법 조항 가져오기)
         const retrieveResponse = await fetch("http://ekaf.kro.kr:25901/retrieve", {
           method: "POST",
@@ -72,6 +82,20 @@ export default {
         const translatedRetrieveText = translatedRetrieveData.translatedText;
 
         // 3. LLM 모델로 질문과 번역된 법 조항 전송
+        // 사용자의 질문도 영어로 번역
+        const translateQuestionResponse = await fetch("http://ekaf.kro.kr:25901/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            q: this.userInput,
+            source: "auto",
+            target: "en",
+          }),
+        });
+        const translatedQuestionData = await translateQuestionResponse.json();
+        const translatedQuestion = translatedQuestionData.translatedText;
+
+        // LLM 모델 호출
         const llmResponse = await fetch("http://ekaf.kro.kr:25901/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -79,7 +103,7 @@ export default {
             model: "llama3.2:1b",
             messages: [
               { role: "system", content: "You are a helpful legal assistant." },
-              { role: "user", content: `Question: ${this.userInput}\nRelated Laws: ${translatedRetrieveText}` },
+              { role: "user", content: `Question: ${translatedQuestion}\nRelated Laws: ${translatedRetrieveText}` },
             ],
             stream: false,
           }),
@@ -103,7 +127,22 @@ export default {
       } catch (error) {
         console.error("Error:", error);
         alert("문제가 발생했습니다. 다시 시도해주세요.");
+      } finally {
+        this.stopLoadingAnimation(); // 로딩 애니메이션 중지
+        this.isLoading = false; // 로딩 상태 해제
       }
+    },
+    startLoadingAnimation() {
+      let dotCount = 1;
+      this.loadingInterval = setInterval(() => {
+        this.loadingText = "응답 생성중" + ".".repeat(dotCount);
+        dotCount = (dotCount % 4) + 1; // 1 ~ 4 사이에서 반복
+      }, 500); // 0.5초마다 업데이트
+    },
+    stopLoadingAnimation() {
+      clearInterval(this.loadingInterval);
+      this.loadingInterval = null;
+      this.loadingText = "응답 생성중."; // 기본 텍스트로 복원
     },
   },
 };
