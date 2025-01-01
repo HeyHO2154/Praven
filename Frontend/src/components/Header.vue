@@ -17,7 +17,7 @@
           <li class="dropdown" @mouseenter="showDropdown('service')" @mouseleave="hideDropdown('service')">
             <a :class="{ active: isDropdownVisible.service }" href="#">서비스<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.service }">
-              <li><a href="#" @click="navigateToPage('/powerclicker')">파워 클릭커</a></li>
+              <li><a href="#" @click="navigateToPage('/powerclicker')">파워 클리커</a></li>
               <li><a href="#" @click="navigateToPage('/itlaw')">잇(IT)법</a></li>
             </ul>
           </li>
