@@ -92,8 +92,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between; /* 요소 간 동일 간격 배치 */
-  width: 80%; /* 헤더의 전체 너비 */
-  max-width: 1200px; /* 헤더의 최대 너비 */
+  width: 100%; /* 헤더의 전체 너비 */
+  max-width: 1100px; /* 헤더의 최대 너비 */
 }
 
 /* 로고 스타일 */
@@ -169,16 +169,32 @@ export default {
 }
 
 .dropdown-menu li a {
+  position: relative; /* ::before를 사용할 수 있도록 position 설정 */
   display: block;
   text-decoration: none;
   font-size: 14px;
   color: black;
-  transition: color 0.1s ease;
+  padding: 10px 5px;
+  transition: color 0.1s ease, background-color 0.1s ease; /* 배경색 전환 추가 */
 }
 
-.dropdown-menu li a:hover {
+.dropdown-menu li a:hover,
+.dropdown-menu li a.active {
   color: #f57c00;
 }
+
+.dropdown-menu li a:hover::before,
+.dropdown-menu li a.active::before {
+  content: ''; /* 가상 요소 활성화 */
+  position: absolute;
+  left: -20px; /* 왼쪽으로 이동하여 드롭다운 메뉴에 밀착 */
+  top: -10px;
+  width: 4px; /* 직사각형 너비 */
+  height: 150%; /* 글자의 높이에 맞춤 */
+  background-color: #f57c00; /* 주황색 */
+  border-radius: 0px; /* 직사각형에 약간의 곡률 */
+}
+
 
 /* 로그인 버튼 */
 .login-button button {
