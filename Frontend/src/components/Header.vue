@@ -5,7 +5,7 @@
       <nav class="nav-menu">
         <ul class="menu-list">
           <li class="dropdown" @mouseenter="showDropdown('news')" @mouseleave="hideDropdown('news')">
-            <a :class="{ active: isDropdownVisible.news }" href="#">프라벤 소식지</a>
+            <a :class="{ active: isDropdownVisible.news }" href="#">프라벤 소식지<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.news }">
               <li><a href="#">공지사항</a></li>
               <li><a href="#">활동사진</a></li>
@@ -15,21 +15,21 @@
             <a href="#">회사소개</a>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('service')" @mouseleave="hideDropdown('service')">
-            <a :class="{ active: isDropdownVisible.service }" href="#">서비스</a>
+            <a :class="{ active: isDropdownVisible.service }" href="#">서비스<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.service }">
               <li><a href="#">파워 클릭커</a></li>
               <li><a href="#">잇(IT)법</a></li>
             </ul>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('contact')" @mouseleave="hideDropdown('contact')">
-            <a :class="{ active: isDropdownVisible.contact }" href="#">소통 창구</a>
+            <a :class="{ active: isDropdownVisible.contact }" href="#">소통 창구<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.contact }">
               <li><a href="#">문의사항</a></li>
               <li><a href="#">자유게시판</a></li>
             </ul>
           </li>
           <li class="dropdown" @mouseenter="showDropdown('recruit')" @mouseleave="hideDropdown('recruit')">
-            <a :class="{ active: isDropdownVisible.recruit }" href="#">입사지원</a>
+            <a :class="{ active: isDropdownVisible.recruit }" href="#">입사지원<i class="icofont-rounded-down"></i></a>
             <ul class="dropdown-menu" :class="{ visible: isDropdownVisible.recruit }">
               <li><a href="#">채용공고</a></li>
               <li><a href="#">합격자 발표</a></li>
