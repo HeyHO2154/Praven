@@ -5,6 +5,6 @@ module.exports = defineConfig({
 
 module.exports = {
   devServer: {
-    port: 8080, // 개발 서버 포트를 3000으로 설정
+    port: 25900, // 개발 서버 포트를 3000으로 설정
   },
 };

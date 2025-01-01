@@ -1,7 +1,7 @@
 <template>
     <footer>
-      <p>대표: 허성준</p>
-      <p>사업자 등록번호: 123-45-678910</p>
+      <p>개발자: 허성준</p>
+      <p>이메일: junma97@naver.com</p>
       <p>
         <a href="https://sites.google.com/view/praven-privacy/%ED%99%88" target="_blank">개인정보처리방침</a>
       </p>
