@@ -2,7 +2,28 @@
     <div class="main-page">
       <h1>Welcome to the Main Page</h1>
       <p>This is a placeholder for the main content of your app.</p>
-      <button @click="handleClick">Click Me</button>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
+      <p>This is a placeholder for the main content of your app.</p>
     </div>
   </template>
   

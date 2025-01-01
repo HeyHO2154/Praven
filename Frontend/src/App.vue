@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="app">
     <!-- 헤더 컴포넌트 -->
     <AppHeader />
 
@@ -16,7 +16,6 @@ import AppHeader from './components/Header.vue';
 import AppFooter from './components/Footer.vue';
 
 export default {
-  name: 'App',
   components: {
     AppHeader,
     AppFooter,
@@ -25,11 +24,5 @@ export default {
 </script>
 
 <style>
-/* 글로벌 스타일 또는 루트 요소에 대한 스타일 */
-#app {
-  text-align: center;
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+/* 전역 스타일 */
 </style>

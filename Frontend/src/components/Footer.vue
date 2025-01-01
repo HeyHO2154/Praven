@@ -1,6 +1,10 @@
 <template>
     <footer>
-      <p>&copy; 2025 My Vue App</p>
+      <p>대표: 허성준</p>
+      <p>사업자 등록번호: 123-45-678910</p>
+      <p>
+        <a href="https://sites.google.com/view/praven-privacy/%ED%99%88" target="_blank">개인정보처리방침</a>
+      </p>
     </footer>
   </template>
   
@@ -12,10 +16,24 @@
   
   <style>
   footer {
-    background-color: #35495e;
+    background-color: #e1770e;
     color: white;
-    padding: 10px;
+    padding: 5px;
     text-align: center;
+  }
+  footer p {
+    margin: 10px 0; /* 상하 간격 5px로 설정 */
+    line-height: 1.2; /* 줄 간격 줄이기 */
+  }
+  footer a:visited {
+    color: white; /* 클릭 후에도 링크 색상 유지 */
+    border-bottom: 1px solid white; /* 클릭 후 밑줄 색상 유지 */
+  }
+
+  /* 기본 여백 제거 */
+  body {
+    margin: 0;
+    padding: 0;
   }
   </style>
   
