@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.example.ssafit.mapper") // 매퍼 패키지 경로를 정확히 지정
+@MapperScan("com.example.praven.mapper") // 매퍼 패키지 경로를 정확히 지정
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

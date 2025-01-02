@@ -3,10 +3,17 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
-<mapper namespace="com.example.ssafit.mapper.CommentMapper">
+<mapper namespace="com.example.mapper.CommentMapper">
 
-	<select id="getAllComments" parameterType="com.example.ssafit.model.Video" resultType="com.example.ssafit.model.Comment">
-        SELECT * FROM comments WHERE videoId = #{videoId}
+    <!-- 댓글 목록 조회 -->
+    <select id="selectCommentsByBoardId" resultType="Comment" parameterType="int">
+        SELECT * FROM comment WHERE boardId = #{boardId}
     </select>
+
+    <!-- 댓글 저장 -->
+    <insert id="insertComment" parameterType="Comment">
+        INSERT INTO comment (boardId, userId, contents)
+        VALUES (#{boardId}, #{userId}, #{contents})
+    </insert>
 
 </mapper>
